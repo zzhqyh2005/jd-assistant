@@ -367,11 +367,16 @@ class Assistant(object):
         return 'https:' + reserve_url if reserve_url else None
 
     @check_login
-    def make_reserve(self, sku_id):
+    # def make_reserve(self, sku_id, buy_time):
+    def make_reserve(self, sku_id, buy_time):
         """商品预约
         :param sku_id: 商品id
+        :param buy_time: 预约时间
         :return:
         """
+        t = Timer(buy_time=buy_time)
+        t.start()
+
         reserve_url = self._get_reserve_url(sku_id)
         if not reserve_url:
             logger.error('%s 非预约商品', sku_id)
@@ -1288,7 +1293,9 @@ class Assistant(object):
         for count in range(1, retry + 1):
             logger.info('第[%s/%s]次尝试抢购商品:%s', count, retry, sku_id)
             self.request_seckill_url(sku_id)
+            time.sleep(1)
             self.request_seckill_checkout_page(sku_id, num)
+            time.sleep(1)
             if self.submit_seckill_order(sku_id, num):
                 return True
             else:
